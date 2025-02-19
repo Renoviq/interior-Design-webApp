@@ -3,8 +3,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Home, Image, Wand2 } from "lucide-react";
 import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 import { useEffect, useState } from "react";
-import {Footer} from "@/components/footer"; // Import the Footer component
 
 const backgroundImages = [
   "https://images.unsplash.com/photo-1600210492486-724fe5c67fb3",
@@ -44,29 +44,30 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen flex flex-col">
       {/* Background Image Carousel */}
       {backgroundImages.map((img, index) => (
         <div
           key={img}
-          className="absolute inset-0 transition-opacity duration-1000"
+          className="fixed inset-0 transition-opacity duration-1000"
           style={{
             opacity: currentBg === index ? 1 : 0,
             backgroundImage: `url(${img})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            zIndex: -1
           }}
         />
       ))}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="fixed inset-0 bg-black/50" style={{ zIndex: -1 }} />
 
       {/* Navbar */}
       <Navbar />
 
       {/* Content */}
-      <main className="relative pt-16">
+      <main className="flex-grow">
         <div className="container mx-auto px-4 py-16">
           <motion.div
             variants={containerVariants}
@@ -75,7 +76,7 @@ export default function LandingPage() {
             className="text-center space-y-16"
           >
             {/* Hero Section */}
-            <motion.div variants={itemVariants} className="space-y-6">
+            <motion.div variants={itemVariants} className="space-y-6 pt-16">
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white">
                 Room Renovator AI
               </h1>
@@ -141,8 +142,9 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </main>
-      {/* Add Footer */}
-      <Footer /> {/* Added Footer component */}
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
