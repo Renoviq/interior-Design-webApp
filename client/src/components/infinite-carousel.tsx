@@ -19,7 +19,7 @@ export function InfiniteCarousel({ images }: InfiniteCarouselProps) {
       await controls1.start({
         x: [0, -container1Ref.current.scrollWidth / 2],
         transition: {
-          duration: 20,
+          duration: 30, // Increased duration for slower movement
           ease: "linear",
           repeat: Infinity,
         },
@@ -33,7 +33,7 @@ export function InfiniteCarousel({ images }: InfiniteCarouselProps) {
       await controls2.start({
         x: [-container2Ref.current.scrollWidth / 2, 0],
         transition: {
-          duration: 20,
+          duration: 30, // Increased duration for slower movement
           ease: "linear",
           repeat: Infinity,
         },
@@ -46,9 +46,9 @@ export function InfiniteCarousel({ images }: InfiniteCarouselProps) {
 
   return (
     <div className="relative space-y-8 py-4">
-      {/* Dark blue gradient overlays */}
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-blue-900/50 to-transparent z-10" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-blue-900/50 to-transparent z-10" />
+      {/* White gradient overlays */}
+      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
+      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
 
       {/* First row - moving left */}
       <div className="overflow-hidden relative w-full">
