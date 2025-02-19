@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Home, Image, Wand2 } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { useEffect, useState } from "react";
+import {Footer} from "@/components/footer"; // Import the Footer component
 
 const backgroundImages = [
   "https://images.unsplash.com/photo-1600210492486-724fe5c67fb3",
@@ -140,6 +141,8 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </main>
+      {/* Add Footer */}
+      <Footer /> {/* Added Footer component */}
     </div>
   );
 }

@@ -8,11 +8,13 @@ import LandingPage from "@/pages/landing-page";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
+import AboutPage from "@/pages/about-page";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/about" component={AboutPage} />
       <ProtectedRoute path="/studio" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
