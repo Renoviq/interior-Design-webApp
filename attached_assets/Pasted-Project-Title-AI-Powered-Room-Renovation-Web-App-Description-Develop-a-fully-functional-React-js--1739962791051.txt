@@ -1,0 +1,152 @@
+Project Title: AI-Powered Room Renovation Web App
+
+Description:
+Develop a fully functional React.js web application that allows users to upload images of their bedroom, drawing room, or kitchen. The AI algorithm will renovate the uploaded image and generate a modified version showcasing different renovation ideas. The website will have a modern UI/UX, smooth animations, and multiple interactive features.
+
+Design & Color Palette:
+
+Theme Colors: White, Light Green, and Cream.
+
+Aesthetic & Modern UI: The design should be minimal yet visually appealing.
+
+Animated Effects: Smooth hover effects, infinite scrolling animations, cursor light/shadow effects.
+
+Key Features:
+
+1. Landing Page (Home Section)
+
+A visually attractive animated landing page.
+
+Colorful title with a dynamic background image that changes over time.
+
+Short feature description below the title.
+
+Two call-to-action buttons:
+
+"Try the AI" → Navigates to the upload section.
+
+"Learn More" → Scrolls to the About section.
+
+Cursor Effects: A light glow or shadow follows the cursor to create an immersive effect.
+
+2. Navigation Bar & Authentication System
+
+Navbar with Home, About, Features, and Contact sections.
+
+Before login: "Log In/Sign Up" button.
+
+After login: User’s circular profile picture with a dropdown menu containing:
+
+"My Profile" – Takes user to their profile settings.
+
+"My Creations" – Shows saved AI-generated renovation images.
+
+"Settings" – Allows user to update preferences.
+
+"Log Out" – Logs the user out.
+
+Authentication:
+
+Sign-up/Login with Email, Phone Number, Google, and Facebook.
+
+OTP Verification for email sign-up.
+
+Secure password handling.
+
+3. Image Upload & AI Processing Section
+
+Users upload an image of their room (Bedroom, Drawing Room, or Kitchen).
+
+AI Algorithm processes the image and renovates it based on various ideas.
+
+After Processing:
+
+Users can Preview the AI-modified image.
+
+Download options with different image quality selections.
+
+4. Infinite Scrolling Feature (Inspiration Gallery)
+
+A carousel of renovation ideas scrolling infinitely from right to left.
+
+On hover, the scrolling stops, and all other images become black/white while the hovered image remains in color.
+
+Clicking an image expands it with a zoomed preview and details about the renovation style.
+
+5. User Dashboard - "My Creations" Section
+
+Displays previously generated renovation images in a grid card format.
+
+Hover Effect:
+
+When hovering over an image, an animation effect highlights the image.
+
+Small overlay options appear for Download, Edit, and Delete.
+
+6. Backend & Database Integration
+
+Database for User Data & Images (Firebase, MongoDB, or PostgreSQL).
+
+Secure Image Storage:
+
+Store user-uploaded and AI-processed images.
+
+Allow retrieval and management of saved images.
+
+7. Contact & About Pages
+
+About Section:
+
+Brief description of how the AI-powered renovation process works.
+
+Details about the technology and AI models used.
+
+Contact Section:
+
+Inquiry form for user support.
+
+Social media links and email support.
+
+Additional Features to Enhance UX:
+
+Lazy Loading & Optimized Performance: Ensuring fast page load times.
+
+Mobile Responsiveness: Fully responsive design across all screen sizes.
+
+Error Handling & Notifications:
+
+Alerts for failed uploads, login errors, etc.
+
+Confirmation pop-ups for deleting images.
+
+Smooth Animations & Transitions:
+
+Fade-ins, hover animations, and background effects.
+
+Tech Stack:
+
+Frontend: React.js, TailwindCSS / Styled Components, Framer Motion for animations.
+
+Backend: Node.js, Express.js.
+
+Database: Firebase / MongoDB / PostgreSQL.
+
+AI Processing: Python-based AI model (possibly hosted on AWS Lambda or Google Cloud Functions).
+
+Authentication: Firebase Auth / OAuth (Google, Facebook, Email-OTP).
+
+Image Storage: Cloudinary / Firebase Storage / Amazon S3.
+
+Final Output Expectations:
+
+A fully functional, user-friendly React.js web app.
+
+AI-powered image renovation feature with smooth performance.
+
+A visually stunning landing page with dynamic elements.
+
+Secure user authentication and image storage.
+
+Interactive infinite scrolling gallery for renovation ideas.
+
+My Creations dashboard with saved AI-generated images.
