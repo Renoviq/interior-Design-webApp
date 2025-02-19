@@ -13,7 +13,9 @@ import { InfiniteCarousel } from "@/components/infinite-carousel";
 const backgroundImages = [
   "https://images.unsplash.com/photo-1600210492486-724fe5c67fb3",
   "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c",
+  "https://images.unsplash.com/photo-1616594039964-ae9021a400a0",
+  "https://images.unsplash.com/photo-1617806118233-18e1de247200"
 ];
 
 const sampleImages = [
@@ -212,25 +214,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <div className="w-full flex items-center justify-center">
-          <div className="w-full max-w-4xl px-4 py-8">
-            <svg className="w-full" height="6" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 3L100 3" stroke="url(#paint0_linear)" strokeWidth="6" strokeLinecap="round"/>
-              <path d="M100 3L200 3" stroke="url(#paint1_linear)" strokeWidth="6" strokeLinecap="round"/>
-              <defs>
-                <linearGradient id="paint0_linear" x1="0" y1="3" x2="200" y2="3" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="transparent"/>
-                  <stop offset="0.5" stopColor="currentColor"/>
-                  <stop offset="1" stopColor="transparent"/>
-                </linearGradient>
-                <linearGradient id="paint1_linear" x1="100" y1="3" x2="300" y2="3" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="currentColor"/>
-                  <stop offset="1" stopColor="transparent"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        </div>
+        {/* Adding more space between sections */}
+        <div className="h-32" />
+
 
         <section id="contact" className="py-24 bg-white">
           <div className="container mx-auto px-4">
@@ -246,12 +232,12 @@ export default function LandingPage() {
                     contact@renovai.com
                   </p>
                   <p className="flex items-center text-muted-foreground">
-                    +1 (800) 123 4567
+                    +92 344 1886535
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-6 shadow-lg">
+              <div className="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
                 <Form {...form}>
                   <form className="space-y-6">
                     <FormField
@@ -310,7 +296,7 @@ export default function LandingPage() {
                       )}
                     />
 
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-48 mx-auto block">
                       Submit
                     </Button>
                   </form>
