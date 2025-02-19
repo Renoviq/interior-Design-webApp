@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Switch, Route } from "wouter";
 import { ProtectedRoute } from "./lib/protected-route";
+import LandingPage from "@/pages/landing-page";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
@@ -11,7 +12,8 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={HomePage} />
+      <Route path="/" component={LandingPage} />
+      <ProtectedRoute path="/studio" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

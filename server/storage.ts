@@ -7,7 +7,13 @@ const MemoryStore = createMemoryStore(session);
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser & { 
+    isVerified: boolean;
+    verificationCode: string | null;
+    verificationExpiry: Date | null;
+  }): Promise<User>;
+  verifyUser(id: number): Promise<void>;
   getRenovationsByUserId(userId: number): Promise<Renovation[]>;
   createRenovation(renovation: InsertRenovation): Promise<Renovation>;
   deleteRenovation(id: number): Promise<void>;
@@ -41,11 +47,31 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email,
+    );
+  }
+
+  async createUser(user: InsertUser & {
+    isVerified: boolean;
+    verificationCode: string | null;
+    verificationExpiry: Date | null;
+  }): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const newUser: User = { ...user, id };
+    this.users.set(id, newUser);
+    return newUser;
+  }
+
+  async verifyUser(id: number): Promise<void> {
+    const user = await this.getUser(id);
+    if (user) {
+      user.isVerified = true;
+      user.verificationCode = null;
+      user.verificationExpiry = null;
+      this.users.set(id, user);
+    }
   }
 
   async getRenovationsByUserId(userId: number): Promise<Renovation[]> {
