@@ -11,11 +11,13 @@ import { useEffect, useState } from "react";
 import { InfiniteCarousel } from "@/components/infinite-carousel";
 
 const backgroundImages = [
-  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb3",
-  "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c",
-  "https://images.unsplash.com/photo-1616594039964-ae9021a400a0",
-  "https://images.unsplash.com/photo-1617806118233-18e1de247200"
+  "/images/background1.jpg",
+  "/images/background2.jpg",
+  "/images/background3.jpg",
+  "/images/background4.jpg",
+  "/images/background5.jpg",
+  "/images/background6.jpg",
+  "/images/background7.jpg"
 ];
 
 const sampleImages = [
@@ -215,7 +217,7 @@ export default function LandingPage() {
         </section>
 
         {/* Adding more space between sections */}
-        <div className="h-32" />
+        <div className="h-40" />
 
 
         <section id="contact" className="py-24 bg-white">
@@ -229,7 +231,7 @@ export default function LandingPage() {
                 </p>
                 <div className="space-y-4">
                   <p className="flex items-center text-muted-foreground">
-                    contact@renovai.com
+                    contact@renoviqai.com
                   </p>
                   <p className="flex items-center text-muted-foreground">
                     +92 344 1886535

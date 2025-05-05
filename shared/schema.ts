@@ -23,21 +23,23 @@ export const renovations = pgTable("renovations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertUserSchema = createInsertSchema(users)
+export const baseUserSchema = createInsertSchema(users)
   .pick({
     firstName: true,
     lastName: true,
     email: true,
     username: true,
     password: true,
-  })
+});
+
+export const insertUserSchema = baseUserSchema
   .extend({
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  });
+});
 
 export const verifyOtpSchema = z.object({
   email: z.string().email(),
@@ -51,7 +53,7 @@ export const insertRenovationSchema = createInsertSchema(renovations).pick({
   roomType: true,
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertUserSchema = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Renovation = typeof renovations.$inferSelect;
 export type InsertRenovation = z.infer<typeof insertRenovationSchema>;

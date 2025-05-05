@@ -19,7 +19,7 @@ export function InfiniteCarousel({ images }: InfiniteCarouselProps) {
       await controls1.start({
         x: [0, -container1Ref.current.scrollWidth / 2],
         transition: {
-          duration: 30, // Increased duration for slower movement
+          duration: 50, // Increased duration for slower movement
           ease: "linear",
           repeat: Infinity,
         },
@@ -33,7 +33,7 @@ export function InfiniteCarousel({ images }: InfiniteCarouselProps) {
       await controls2.start({
         x: [-container2Ref.current.scrollWidth / 2, 0],
         transition: {
-          duration: 30, // Increased duration for slower movement
+          duration: 50, // Increased duration for slower movement
           ease: "linear",
           repeat: Infinity,
         },

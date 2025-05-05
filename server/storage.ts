@@ -1,4 +1,4 @@
-import { User, InsertUser, Renovation, InsertRenovation } from "@shared/schema";
+import { User, InsertUserSchema, Renovation, InsertRenovation } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
@@ -8,7 +8,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: InsertUser & { 
+  createUser(user: InsertUserSchema & { 
     isVerified: boolean;
     verificationCode: string | null;
     verificationExpiry: Date | null;
@@ -21,6 +21,9 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  getUserById(id: number) {
+     throw new Error("Method not implemented.");
+  }
   private users: Map<number, User>;
   private renovations: Map<number, Renovation>;
   private currentUserId: number;
@@ -53,7 +56,7 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createUser(user: InsertUser & {
+  async createUser(user: InsertUserSchema & {
     isVerified: boolean;
     verificationCode: string | null;
     verificationExpiry: Date | null;

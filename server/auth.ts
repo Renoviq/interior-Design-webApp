@@ -2,11 +2,14 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
+import dotenv from "dotenv";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 import { z } from "zod";
+
+
 
 declare global {
   namespace Express {
@@ -89,9 +92,19 @@ export function setupAuth(app: Express) {
         verificationExpiry,
       });
 
-      // Here you would typically send the OTP via email
-      // For development, we'll just log it
-      console.log(`Verification code for ${user.email}: ${otp}`);
+      // Send the OTP via email
+      try {
+        const { sendEmail } = await import("./email");
+        await sendEmail(
+          user.email,
+          "Your Verification Code",
+          "Your verification code is: " + otp,
+          `<p>Your verification code is: <strong>${otp}</strong></p>`
+        );
+      } catch (error) {
+        console.error("Failed to send verification email:", error);
+        return res.status(500).send("Failed to send verification email");
+      }
 
       res.status(201).json({ message: "Verification code sent to your email" });
     } catch (error) {
@@ -101,35 +114,32 @@ export function setupAuth(app: Express) {
 
   app.post("/api/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
-
+  
     const user = await storage.getUserByEmail(email);
-    if (!user) {
-      return res.status(400).send("User not found");
-    }
-
-    if (user.isVerified) {
-      return res.status(400).send("User already verified");
-    }
-
+    if (!user) return res.status(400).send("User not found");
+  
+    if (user.isVerified) return res.status(400).send("User already verified");
+  
     if (!user.verificationCode || !user.verificationExpiry) {
       return res.status(400).send("No verification code found");
     }
-
+  
     if (new Date() > user.verificationExpiry) {
       return res.status(400).send("Verification code expired");
     }
-
+  
     if (user.verificationCode !== otp) {
       return res.status(400).send("Invalid verification code");
     }
-
+  
     await storage.verifyUser(user.id);
-
+  
     req.login(user, (err) => {
       if (err) return res.status(500).send(err.message);
       res.status(200).json(user);
     });
   });
+  
 
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
     res.status(200).json(req.user);
@@ -147,3 +157,19 @@ export function setupAuth(app: Express) {
     res.json(req.user);
   });
 }
+
+dotenv.config();
+
+export const insertUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string(),
+  confirmPassword: z.string(),
+});
+
+export const verifyOtpSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(6),
+});

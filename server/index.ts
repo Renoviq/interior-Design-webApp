@@ -1,11 +1,46 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
+import session from "express-session";
+import passport from "passport";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import dotenv from "dotenv";
+dotenv.config();
+
+// 🔄 Import passport setup (serializers)
+import "./passport";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5000", // Frontend origin
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// 🔐 Setup session
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET!, // Use an environment variable in production
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // true only in HTTPS
+      sameSite: "lax",
+    },
+  })
+);
+
+// 🔐 Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 🔍 Request Logger
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -36,6 +71,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// 🧩 Register routes
 (async () => {
   const server = await registerRoutes(app);
 
@@ -47,17 +83,12 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client
   const PORT = 5000;
   server.listen(PORT, "0.0.0.0", () => {
     log(`serving on port ${PORT}`);

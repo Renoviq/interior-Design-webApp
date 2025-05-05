@@ -14,7 +14,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <a href="/" className="text-2xl font-bold">
-            <span className="text-primary">Renov</span>
+            <span className="text-primary">Renoviq</span>
             <span className="text-white">AI</span>
           </a>
 
@@ -49,7 +49,7 @@ export function Navbar() {
           {/* Auth Button */}
           <Button 
             variant="outline" 
-            className="bg-white/10 hover:bg-white/20 border-white/20 text-white"
+            className="bg-white hover:bg-white/20 border-white/20 text-black/90 hover:text-white transition w-28 rounded-full px-4 py-2"
             onClick={() => location !== "/auth" && window.location.assign("/auth")}
           >
             Sign in

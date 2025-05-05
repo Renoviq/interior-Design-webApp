@@ -7,7 +7,7 @@ export function Footer() {
         {/* Top Section */}
         <div className="flex flex-col items-center justify-center space-y-8 border-b border-white/10 pb-8">
           <a href="/" className="text-2xl font-bold">
-            <span className="text-primary">Renov</span>
+            <span className="text-primary">Renoviq</span>
             <span className="text-white">AI</span>
           </a>
           <nav className="flex flex-wrap justify-center gap-8">
@@ -23,7 +23,7 @@ export function Footer() {
 
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row items-center justify-between pt-8">
-          <p className="text-sm text-white/60 mb-4 md:mb-0">© RenovAI Studios</p>
+          <p className="text-sm text-white/60 mb-4 md:mb-0">© RenoviqAI Studios</p>
           <div className="flex space-x-6">
             <a href="#" className="text-white/60 hover:text-primary transition">
               <FaTwitter className="h-5 w-5" />
