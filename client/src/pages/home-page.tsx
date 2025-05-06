@@ -15,7 +15,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <h1 className="text-xl font-bold">Room Renovator AI</h1>
+          <h1 className="text-xl font-bold">Renoviq AI - Your Personal AI Home Renovator</h1>
           <UserNav />
         </div>
       </header>

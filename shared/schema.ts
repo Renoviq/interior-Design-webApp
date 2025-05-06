@@ -20,6 +20,7 @@ export const renovations = pgTable("renovations", {
   originalImage: text("original_image").notNull(),
   generatedImage: text("generated_image").notNull(),
   roomType: text("room_type").notNull(),
+  description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

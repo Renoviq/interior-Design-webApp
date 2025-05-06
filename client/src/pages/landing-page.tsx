@@ -21,11 +21,15 @@ const backgroundImages = [
 ];
 
 const sampleImages = [
-  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb3",
-  "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c",
-  "https://images.unsplash.com/photo-1616594039964-ae9021a400a0",
-  "https://images.unsplash.com/photo-1617806118233-18e1de247200"
+  "/images/sample1.jpg",
+  "/images/sample2.jpg",
+  "/images/sample3.jpg",
+  "/images/sample4.jpg",
+  "/images/sample5.jpg",
+  "/images/sample6.jpg",
+  "/images/sample7.jpg",
+  "/images/sample8.jpg",
+  "/images/sample9.jpg"
 ];
 
 const features = [
@@ -63,7 +67,41 @@ const features = [
 
 export default function LandingPage() {
   const [currentBg, setCurrentBg] = useState(0);
-  const form = useForm();
+  const form = useForm({
+    defaultValues: {
+      fullName: "",
+      email: "",
+      company: "",
+      message: ""
+    }
+  });
+  const [submitStatus, setSubmitStatus] = useState<string | null>(null);
+
+  const onSubmit = async (data: any) => {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        setSubmitStatus("Your message has been sent successfully.");
+        form.reset();
+        window.history.pushState(null, "", "/");
+        setTimeout(() => setSubmitStatus(null), 5000);
+      } else {
+        const errorData = await response.json();
+        setSubmitStatus(errorData.error || "Failed to send message.");
+        setTimeout(() => setSubmitStatus(null), 5000);
+      }
+    } catch (error) {
+      setSubmitStatus("An error occurred while sending your message.");
+      setTimeout(() => setSubmitStatus(null), 5000);
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -101,8 +139,8 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white">
-                Room Renovator AI
+              <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-white">
+                Transform your Space with AI
               </h1>
               <p className="text-xl text-white/80 max-w-2xl mx-auto">
                 Transform your living spaces with the power of AI. Upload a photo and get instant renovation ideas that match your style.
@@ -176,10 +214,15 @@ export default function LandingPage() {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
 
-            <div className="mt-16">
-              <InfiniteCarousel images={sampleImages} />
-            </div>
+        {/* Adding more space between sections */}
+        {/* <div className="h-40" /> */}
+
+        <section id="carousel" className="py-24 bg-white">
+          <div className="container mx-auto px-4">
+            <InfiniteCarousel images={sampleImages} />
           </div>
         </section>
 
@@ -217,8 +260,18 @@ export default function LandingPage() {
         </section>
 
         {/* Adding more space between sections */}
-        <div className="h-40" />
-
+        <section className="py-20 bg-transparent flex flex-col items-center justify-center space-y-6 rounded-lg shadow-md">
+          <h2 className="text-3xl font-bold text-white">Let's try the AI</h2>
+          <p className="text-white max-w-xl text-center">
+            Experience the power of AI-driven room renovation ideas tailored just for you.
+          </p>
+          <button
+            onClick={() => window.location.assign("/auth")}
+            className="px-6 py-3 bg-white text-black rounded-full hover:bg-primary hover:text-white transition"
+          >
+            Give a try
+          </button>
+        </section>
 
         <section id="contact" className="py-24 bg-white">
           <div className="container mx-auto px-4">
@@ -239,9 +292,9 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-8 shadow-lg border border-gray-100">
+              <div className="bg-gray-50 rounded-lg p-8 shadow-2xl border border-black/20">
                 <Form {...form}>
-                  <form className="space-y-6">
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <FormField
                       control={form.control}
                       name="fullName"
@@ -298,9 +351,14 @@ export default function LandingPage() {
                       )}
                     />
 
-                    <Button type="submit" className="w-48 mx-auto block">
-                      Submit
+                    <Button type="submit" className="w-48 mx-auto block" disabled={form.formState.isSubmitting}>
+                      {form.formState.isSubmitting ? "Sending..." : "Submit"}
                     </Button>
+                    {submitStatus && (
+                      <p className="mt-4 text-center text-sm text-green-600">
+                        {submitStatus}
+                      </p>
+                    )}
                   </form>
                 </Form>
               </div>

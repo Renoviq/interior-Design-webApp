@@ -95,21 +95,145 @@ export function setupAuth(app: Express) {
       // Send the OTP via email
       try {
         const { sendEmail } = await import("./email");
+        
+        // Email subject
+        const subject = "Your RenoviqAI Verification Code";
+        
+        // Plain text version
+        const textContent = `
+      Hello from RenoviqAI!
+      
+      Thank you for choosing RenoviqAI for your home renovation journey.
+      
+      Your verification code is: ${otp}
+      
+      This code will expire in 10 minutes.
+      
+      If you did not request this code, please ignore this email or contact our support team at support@renoviqai.com.
+      
+      Best regards,
+      The RenoviqAI Team
+      `;
+      
+        // HTML version with styling
+        const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RenoviqAI Verification Code</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .header {
+            background-color: #4A90E2;
+            padding: 20px;
+            text-align: center;
+          }
+          .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+          }
+          .content {
+            padding: 30px 20px;
+            background-color: #ffffff;
+          }
+          .code-box {
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 2px;
+          }
+          .code {
+            font-weight: bold;
+            color: #4A90E2;
+            font-size: 32px;
+          }
+          .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #888888;
+            background-color: #f9f9f9;
+          }
+          .button {
+            background-color: #4A90E2;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
+          }
+          @media only screen and (max-width: 600px) {
+            .container {
+              width: 100%;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">RenoviqAI</div>
+          </div>
+          <div class="content">
+            <h2>Verify Your Email Address</h2>
+            <p>Hello,</p>
+            <p>Thank you for choosing RenoviqAI for your home renovation journey. To complete your account setup, please use the verification code below:</p>
+            
+            <div class="code-box">
+              <span class="code">${otp}</span>
+            </div>
+            
+            <p>This code will expire in <strong>10 minutes</strong>.</p>
+            <p>If you did not request this code, please ignore this email or contact our support team.</p>
+            <p>With RenoviqAI, transform your home renovation ideas into reality using the power of AI.</p>
+            
+            <p>Best regards,<br>The RenoviqAI Team</p>
+          </div>
+          <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} RenoviqAI. All rights reserved.</p>
+            <p>If you have any questions, please contact us at support@renoviqai.com</p>
+            <p>123 Innovation Street, Tech City, TC 12345</p>
+          </div>
+        </div>
+      </body>
+      </html>
+      `;
+      
         await sendEmail(
           user.email,
-          "Your Verification Code",
-          "Your verification code is: " + otp,
-          `<p>Your verification code is: <strong>${otp}</strong></p>`
+          subject,
+          textContent,
+          htmlContent
         );
       } catch (error) {
         console.error("Failed to send verification email:", error);
         return res.status(500).send("Failed to send verification email");
       }
-
+      
       res.status(201).json({ message: "Verification code sent to your email" });
-    } catch (error) {
-      next(error);
-    }
+      } catch (error) {
+        next(error);
+      }
   });
 
   app.post("/api/verify-otp", async (req, res) => {

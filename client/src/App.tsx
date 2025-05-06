@@ -8,7 +8,7 @@ import LandingPage from "@/pages/landing-page";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
-import AboutPage from "@/pages/about-page";
+import AboutPage from "@/pages/About";
 
 function Router() {
   return (
