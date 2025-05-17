@@ -4,11 +4,11 @@ import { Express } from "express";
 import session from "express-session";
 import dotenv from "dotenv";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
+import crypto from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 import { z } from "zod";
-
 
 
 declare global {
@@ -32,8 +32,12 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
-function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+
+// Function to generate a 6-digit OTP
+
+export function generateOTP() {
+  const otp = crypto.randomInt(100000, 1000000); // generates a 6-digit number
+  return otp.toString();
 }
 
 export function setupAuth(app: Express) {
@@ -42,6 +46,11 @@ export function setupAuth(app: Express) {
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
+    cookie: {
+    httpOnly: true,
+    secure: false, // Set to true in production with HTTPS
+    maxAge: 1000 * 60 * 60 * 24,
+    }
   };
 
   app.set("trust proxy", 1);
@@ -63,9 +72,13 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser(async (id: number, done) => {
-    const user = await storage.getUser(id);
-    done(null, user);
+  passport.deserializeUser(async (id: string, done) => {
+    try {
+      const user = await storage.getUser(id);
+      done(null, user);
+    } catch (error) {
+      done(error as Error);
+    }
   });
 
   app.post("/api/register", async (req, res, next) => {
@@ -211,8 +224,8 @@ export function setupAuth(app: Express) {
           </div>
           <div class="footer">
             <p>&copy; ${new Date().getFullYear()} RenoviqAI. All rights reserved.</p>
-            <p>If you have any questions, please contact us at support@renoviqai.com</p>
-            <p>123 Innovation Street, Tech City, TC 12345</p>
+            <p>If you have any questions, please contact us at renoviqai.com/contact</p>
+            <p>International Islamic University Islamabad</p>
           </div>
         </div>
       </body>
@@ -234,34 +247,6 @@ export function setupAuth(app: Express) {
       } catch (error) {
         next(error);
       }
-  });
-
-  app.post("/api/verify-otp", async (req, res) => {
-    const { email, otp } = req.body;
-  
-    const user = await storage.getUserByEmail(email);
-    if (!user) return res.status(400).send("User not found");
-  
-    if (user.isVerified) return res.status(400).send("User already verified");
-  
-    if (!user.verificationCode || !user.verificationExpiry) {
-      return res.status(400).send("No verification code found");
-    }
-  
-    if (new Date() > user.verificationExpiry) {
-      return res.status(400).send("Verification code expired");
-    }
-  
-    if (user.verificationCode !== otp) {
-      return res.status(400).send("Invalid verification code");
-    }
-  
-    await storage.verifyUser(user.id);
-  
-    req.login(user, (err) => {
-      if (err) return res.status(500).send(err.message);
-      res.status(200).json(user);
-    });
   });
   
 

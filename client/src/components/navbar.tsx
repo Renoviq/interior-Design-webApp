@@ -39,7 +39,7 @@ export function Navbar() {
               Features
             </button>
             <button 
-              onClick={() => scrollToSection('contact')}
+              onClick={() => location !== "/contact" && setLocation("/contact")}
               className="text-sm text-white/90 hover:text-primary transition"
             >
               Contact

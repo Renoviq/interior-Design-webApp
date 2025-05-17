@@ -9,7 +9,7 @@ export default function About() {
       <Navbar />
       {/* Hero Section */}
       <div
-        className="relative bg-cover bg-center h-96 flex flex-col justify-center items-center text-center text-white"
+        className="relative bg-cover bg-center pt-20 h-96 flex flex-col justify-center items-center text-center text-white"
         style={{ backgroundImage: "url('/images/background2.jpg')" }}
       >
         <h1 className="text-6xl font-bold text-white z-10">About</h1>

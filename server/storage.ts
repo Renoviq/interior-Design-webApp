@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUserSchema & { 
@@ -15,7 +15,7 @@ export interface IStorage {
     verificationCode: string | null;
     verificationExpiry: Date | null;
   }): Promise<User>;
-  verifyUser(id: number): Promise<void>;
+  verifyUser(id: string): Promise<void>;
   getRenovationsByUserId(userId: number): Promise<Renovation[]>;
   createRenovation(renovation: InsertRenovation): Promise<Renovation>;
   deleteRenovation(id: number): Promise<void>;
@@ -63,11 +63,11 @@ export class MongoStorage implements IStorage {
     };
   }
 
-  async getUserById(id: number): Promise<User | undefined> {
+  async getUserById(id: string): Promise<User | undefined> {
     return this.getUser(id);
   }
 
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     const users = await this.getUsersCollection();
     const doc = await users.findOne({ _id: new ObjectId(id) });
     if (!doc) return undefined;
@@ -100,12 +100,19 @@ export class MongoStorage implements IStorage {
     return this.mapUser(insertedUser);
   }
 
-  async verifyUser(id: number): Promise<void> {
-    const users = await this.getUsersCollection();
-    await users.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { isVerified: true, verificationCode: null, verificationExpiry: null } }
+  async verifyUser(id: string): Promise<void> {
+    try {
+      const users = await this.getUsersCollection();
+      await users.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { isVerified: true, verificationCode: null, verificationExpiry: null } }
     );
+    }
+    catch (error) {
+      console.error("Error verifying user:", error);
+      console.log("Error Verifying");
+      throw error;
+    }
   }
 
   async getRenovationsByUserId(userId: number): Promise<Renovation[]> {

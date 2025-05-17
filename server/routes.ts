@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
+import { generateOTP } from "./auth";
 import { storage } from "./storage";
 import multer from "multer";
 import { insertRenovationSchema, insertUserSchema, verifyOtpSchema } from "@shared/schema";
@@ -17,10 +18,6 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024 // 5MB
   }
 });
-
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Middleware
@@ -51,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (existingUsername) return res.status(400).json({ error: "Username already taken" });
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const otp = generateOtp();
+      const otp = generateOTP();
       const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
       await storage.createUser({
@@ -93,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "OTP expired" });
       }
 
-      await storage.verifyUser(user.id);
+      await storage.verifyUser(user.id.toString());
       const updatedUser = await storage.getUserByEmail(email);
 
       if (!updatedUser) {
@@ -102,8 +99,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       req.login(updatedUser, (err) => {
         if (err) return res.status(500).json({ error: "Login failed after verification" });
-        res.status(200).json(updatedUser);
-        res.redirect("/studio"); // Redirect to the home page after successful verification
+        res.send({ success: true });
+        res.status(200).json({user: updatedUser});
       });
 
     } catch (error) {

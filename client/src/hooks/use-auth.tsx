@@ -15,7 +15,7 @@ type AuthContextType = {
   loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<any, Error, InsertUser>;
-  verifyOtpMutation: UseMutationResult<SelectUser, Error, VerifyOtpData>;
+  verifyOtpMutation: UseMutationResult<{ user: SelectUser }, Error, VerifyOtpData>;
 };
 
 type LoginData = Pick<InsertUser, "username" | "password">;
@@ -79,8 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/verify-otp", data);
       return await res.json();
     },
-    onSuccess: (user: SelectUser) => {
-      queryClient.setQueryData(["/api/user"], user);
+    onSuccess: (data: { user: SelectUser }) => {
+      queryClient.setQueryData(["/api/user"], data.user);
       toast({
         title: "Verification successful",
         description: "Your account has been verified and you are now logged in.",
