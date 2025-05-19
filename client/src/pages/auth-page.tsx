@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { baseUserSchema, insertUserSchema, verifyOtpSchema } from "@shared/schema";
+import {
+  baseUserSchema,
+  insertUserSchema,
+  verifyOtpSchema,
+} from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,13 +29,16 @@ import {
 } from "@/components/ui/input-otp";
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation, verifyOtpMutation } = useAuth();
+  const { user, loginMutation, registerMutation, verifyOtpMutation } =
+    useAuth();
   const { toast } = useToast();
   const [isVerifying, setIsVerifying] = useState(false);
   const [registrationEmail, setRegistrationEmail] = useState("");
 
   const loginForm = useForm({
-    resolver: zodResolver(baseUserSchema.pick({ username: true, password: true })),
+    resolver: zodResolver(
+      baseUserSchema.pick({ username: true, password: true })
+    ),
     defaultValues: { username: "", password: "" },
   });
 
@@ -60,6 +67,7 @@ export default function AuthPage() {
   const handleRegister = async (data: any) => {
     try {
       setRegistrationEmail(data.email);
+      otpForm.setValue("email", data.email);
       await registerMutation.mutateAsync(data);
       setIsVerifying(true);
       toast({
@@ -69,7 +77,8 @@ export default function AuthPage() {
     } catch (error) {
       toast({
         title: "Registration failed",
-        description: error instanceof Error ? error.message : "Something went wrong",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
         variant: "destructive",
       });
     }
@@ -77,7 +86,10 @@ export default function AuthPage() {
 
   const handleVerifyOtp = async (data: any) => {
     try {
-      console.log("Verifying OTP with data:", { email: registrationEmail, otp: data.otp });
+      console.log("Verifying OTP with data:", {
+        email: registrationEmail,
+        otp: data.otp,
+      });
       const result = await verifyOtpMutation.mutateAsync({
         email: registrationEmail,
         otp: data.otp,
@@ -86,13 +98,15 @@ export default function AuthPage() {
       setIsVerifying(false);
       toast({
         title: "Verification successful",
-        description: "Your account has been verified and you are now logged in.",
+        description:
+          "Your account has been verified and you are now logged in.",
       });
     } catch (error) {
       console.error("OTP verification error:", error);
       toast({
         title: "Verification failed",
-        description: error instanceof Error ? error.message : "Something went wrong",
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
         variant: "destructive",
       });
     }
@@ -103,16 +117,23 @@ export default function AuthPage() {
       <Card className="w-full max-w-md p-6">
         {isVerifying ? (
           <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-center">Verify your email</h2>
+            <h2 className="text-2xl font-semibold text-center">
+              Verify your email
+            </h2>
             <p className="text-sm text-muted-foreground text-center">
               Enter the verification code sent to {registrationEmail}
             </p>
             <Form {...otpForm}>
               <form
-                onSubmit={otpForm.handleSubmit((data) => {
-                  console.log("OTP form submitted");
-                  handleVerifyOtp(data);
-                })}
+                onSubmit={otpForm.handleSubmit(
+                  (data) => {
+                    console.log("OTP form submitted");
+                    handleVerifyOtp(data);
+                  },
+                  (errors) => {
+                    console.error("Validation Errors:", errors);
+                  }
+                )}
                 className="space-y-4"
               >
                 <Controller
@@ -137,7 +158,11 @@ export default function AuthPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={otpForm.formState.isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={otpForm.formState.isSubmitting}
+                >
                   {otpForm.formState.isSubmitting ? (
                     <Loader2 className="animate-spin" />
                   ) : (
@@ -156,7 +181,10 @@ export default function AuthPage() {
 
             <TabsContent value="register">
               <Form {...registerForm}>
-                <form onSubmit={registerForm.handleSubmit(handleRegister)} className="space-y-4">
+                <form
+                  onSubmit={registerForm.handleSubmit(handleRegister)}
+                  className="space-y-4"
+                >
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={registerForm.control}
@@ -237,7 +265,11 @@ export default function AuthPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={registerMutation.isPending}
+                  >
                     {registerMutation.isPending ? (
                       <Loader2 className="animate-spin" />
                     ) : (
@@ -251,7 +283,9 @@ export default function AuthPage() {
             <TabsContent value="login">
               <Form {...loginForm}>
                 <form
-                  onSubmit={loginForm.handleSubmit((data) => loginMutation.mutate(data))}
+                  onSubmit={loginForm.handleSubmit((data) =>
+                    loginMutation.mutate(data)
+                  )}
                   className="space-y-4"
                 >
                   <FormField
@@ -280,7 +314,11 @@ export default function AuthPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={loginMutation.isPending}
+                  >
                     {loginMutation.isPending ? (
                       <Loader2 className="animate-spin" />
                     ) : (

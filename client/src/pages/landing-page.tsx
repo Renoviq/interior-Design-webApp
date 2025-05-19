@@ -79,7 +79,7 @@ export default function LandingPage() {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/contactForm", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

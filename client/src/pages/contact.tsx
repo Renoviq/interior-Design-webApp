@@ -12,9 +12,9 @@ import { motion } from "framer-motion";
 export default function Contact() {
   const form = useForm({
     defaultValues: {
-      name: "",
+      fullName: "",
       email: "",
-      subject: "",
+      company: "",
       message: "",
     },
   });
@@ -38,17 +38,12 @@ export default function Contact() {
     setSubmitStatus("submitting");
     setErrorMessage("");
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/contactForm", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          fullName: data.name,
-          email: data.email,
-          company: data.subject,
-          message: data.message,
-        }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -135,50 +130,50 @@ export default function Contact() {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="space-y-6"
                 >
-                  {/* Name & Email Side by Side */}
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormControl>
-                            <Input
-                              placeholder="Your Name"
-                              {...field}
-                              className="w-full border border-gray-300 rounded-md px-4 py-2 bg-white focus:border-green-300 focus:ring-green-300 focus:ring-1 focus:outline-none transition"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="Your Email"
-                              {...field}
-                              className="w-full border border-gray-300 rounded-md px-4 py-2 bg-white focus:border-green-300 focus:ring-green-300 focus:ring-1 focus:outline-none transition"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {/* Subject */}
+                  {/* Full Name */}
                   <FormField
                     control={form.control}
-                    name="subject"
+                    name="fullName"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <Input
-                            placeholder="Subject"
+                            placeholder="Your Full Name"
+                            {...field}
+                            className="w-full border border-gray-300 rounded-md px-4 py-2 bg-white focus:border-green-300 focus:ring-green-300 focus:ring-1 focus:outline-none transition"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Email */}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="Your Email"
+                            {...field}
+                            className="w-full border border-gray-300 rounded-md px-4 py-2 bg-white focus:border-green-300 focus:ring-green-300 focus:ring-1 focus:outline-none transition"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Company */}
+                  <FormField
+                    control={form.control}
+                    name="company"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Company"
                             {...field}
                             className="w-full border border-gray-300 rounded-md px-4 py-2 bg-white focus:border-green-300 focus:ring-green-300 focus:ring-1 focus:outline-none transition"
                           />
