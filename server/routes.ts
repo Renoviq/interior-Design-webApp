@@ -74,40 +74,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ──────────────── OTP VERIFY ────────────────
   app.post("/api/verify-otp", async (req, res) => {
-    try {
-      const parseResult = verifyOtpSchema.safeParse(req.body);
-      if (!parseResult.success) {
-        return res.status(400).json({ error: parseResult.error.errors });
-      }
-
-      const { email, otp } = parseResult.data;
-      const user = await storage.getUserByEmail(email);
-
-      if (!user) return res.status(400).json({ error: "User not found" });
-      if (user.isVerified) return res.status(400).json({ error: "User already verified" });
-      if (user.verificationCode !== otp) return res.status(400).json({ error: "Invalid OTP" });
-      if (!user.verificationExpiry || user.verificationExpiry < new Date()) {
-        return res.status(400).json({ error: "OTP expired" });
-      }
-
-      await storage.verifyUser(user.id.toString());
-      const updatedUser = await storage.getUserByEmail(email);
-
-      if (!updatedUser) {
-        return res.status(400).json({ error: "Failed to retrieve updated user" });
-      }
-
-      req.login(updatedUser, (err) => {
-        if (err) return res.status(500).json({ error: "Login failed after verification" });
-        res.send({ success: true });
-        res.status(200).json({user: updatedUser});
-      });
-
-    } catch (error) {
-      console.error("OTP verification error:", error);
-      res.status(500).json({ error: "Failed to verify OTP" });
+  try {
+    const parseResult = verifyOtpSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: parseResult.error.errors });
     }
-  });
+
+    const { email, otp } = parseResult.data;
+    const user = await storage.getUserByEmail(email);
+
+    if (!user) return res.status(400).json({ error: "User not found" });
+    if (user.isVerified) return res.status(400).json({ error: "User already verified" });
+    if (user.verificationCode !== otp) return res.status(400).json({ error: "Invalid OTP" });
+    if (!user.verificationExpiry || user.verificationExpiry < new Date()) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
+
+    await storage.verifyUser(user.id.toString());
+    const updatedUser = await storage.getUserByEmail(email);
+    if (!updatedUser) {
+      return res.status(400).json({ error: "Failed to retrieve updated user" });
+    }
+
+    req.login(updatedUser, (err) => {
+      if (err) return res.status(500).json({ error: "Login failed after verification" });
+
+      return res.status(200).json({
+        success: true,
+        user: updatedUser
+      });
+    });
+
+  } catch (error) {
+    console.error("OTP verification error:", error);
+    return res.status(500).json({ error: "Failed to verify OTP" });
+  }
+});
 
   // ──────────────── LOGIN ────────────────
   app.post("/api/login", (req, res, next) => {
@@ -131,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ──────────────── CONTACT FORM ────────────────
-  app.post("/api/contact", async (req, res) => {
+  app.post("/api/contactForm", async (req, res) => {
     console.log("Received contact form submission:", req.body);
     try {
       const { fullName, email, company, message } = req.body;
