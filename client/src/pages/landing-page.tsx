@@ -275,7 +275,7 @@ export default function LandingPage() {
 
         <section id="contact" className="py-24 bg-white">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12">
+            <div className="grid md:grid-cols-2 gap-12 px-[23px]">
               <div className="max-w-xl">
                 <h2 className="text-4xl font-bold mb-6">Contact us</h2>
                 <p className="text-lg text-muted-foreground mb-8">
