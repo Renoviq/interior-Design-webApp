@@ -44,17 +44,19 @@ export function Navbar() {
 
   return (
     <nav className="fixed top-2 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-md">
-      <div className="container mx-auto px-0">
+      <div className="mx-auto px-4">
         <div className="flex h-12 items-center justify-between">
           
-          {/* Logo */}
-          <a href="/" className="text-lg font-bold flex items-center">
-            <span className="text-primary">Renoviq</span>
-            <span className="text-gray-800 dark:text-white">AI</span>
-          </a>
+          {/* Logo - Left */}
+          <div className="flex-shrink-0">
+            <a href="/" className="text-lg font-bold flex items-center">
+              <span className="text-primary">Renoviq</span>
+              <span className="text-gray-800 dark:text-white">AI</span>
+            </a>
+          </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Desktop Nav - Center */}
+          <div className="hidden md:flex items-center justify-center space-x-8 flex-1">
             {menuItems.slice(0, 4).map((item) => (
               <button
                 key={item.label}
@@ -64,14 +66,23 @@ export function Navbar() {
                 {item.label}
               </button>
             ))}
+          </div>
+
+          {/* Auth Buttons - Right */}
+          <div className="hidden md:flex items-center space-x-3 flex-shrink-0">
             <Button
               variant="outline"
-              className="bg-white text-black hover:bg-primary hover:text-white border border-gray-300 dark:border-white/30 transition w-20 rounded-full px-2 py-1"
+              className="bg-white text-black hover:bg-primary hover:text-white border border-gray-300 dark:border-white/30 transition rounded-full px-4 py-1 text-sm"
               onClick={handleNav.bind(null, "/auth")}
             >
               Join
             </Button>
-            <button onClick={() => handleNav("/auth")} className="text-sm font-medium text-gray-800 dark:text-white hover:text-primary transition">Sign In</button>
+            <button 
+              onClick={() => handleNav("/auth")} 
+              className="text-sm font-medium text-gray-800 dark:text-white hover:text-primary transition"
+            >
+              Sign In
+            </button>
           </div>
 
           {/* Mobile Toggle */}
