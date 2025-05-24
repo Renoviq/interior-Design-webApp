@@ -90,7 +90,7 @@ export default function Contact() {
               <h2 className="text-4xl font-bold">Get in Touch</h2>
               <div className="flex items-start space-x-4">
                 <div className="p-4 bg-primary rounded-full text-white">
-                  <MapPin size={20} />
+                  <MapPin size={14} />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Address</h3>
@@ -99,7 +99,7 @@ export default function Contact() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="p-4 bg-primary rounded-full text-white">
-                  <Phone size={20} />
+                  <Phone size={14} />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Call Us</h3>
@@ -108,7 +108,7 @@ export default function Contact() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="p-4 bg-primary rounded-full text-white">
-                  <Mail size={20} />
+                  <Mail size={14} />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Email Us</h3>
