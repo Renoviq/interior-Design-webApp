@@ -1,99 +1,132 @@
-import { useEffect, useRef } from "react";
-import { motion, useAnimationControls } from "framer-motion";
+import { useEffect, useRef, useMemo } from "react";
 
 interface InfiniteCarouselProps {
   images: string[];
+  speed?: number; // pixels per second
 }
 
-export function InfiniteCarousel({ images }: InfiniteCarouselProps) {
-  const controls1 = useAnimationControls();
-  const controls2 = useAnimationControls();
-  const container1Ref = useRef<HTMLDivElement>(null);
-  const container2Ref = useRef<HTMLDivElement>(null);
+export function InfiniteCarousel({ images, speed = 50 }: InfiniteCarouselProps) {
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<{ id1?: number; id2?: number }>({});
+
+  // Memoize doubled images array to prevent recreation on every render
+  const doubledImages = useMemo(() => [...images, ...images], [images]);
 
   useEffect(() => {
-    const animate = async () => {
-      if (!container1Ref.current || !container2Ref.current) return;
+    if (!row1Ref.current || !row2Ref.current) return;
 
-      // Animate first row left to right
-      await controls1.start({
-        x: [0, -container1Ref.current.scrollWidth / 2],
-        transition: {
-          duration: 50, // Increased duration for slower movement
-          ease: "linear",
-          repeat: Infinity,
-        },
-      });
+    const row1 = row1Ref.current;
+    const row2 = row2Ref.current;
+    
+    // Calculate the width of one set of images
+    const singleSetWidth = (300 + 16) * images.length; // 300px width + 16px gap
+    
+    let position1 = 0;
+    let position2 = -singleSetWidth;
+    let lastTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const deltaTime = (currentTime - lastTime) / 1000; // Convert to seconds
+      lastTime = currentTime;
+
+      // Update positions
+      position1 -= speed * deltaTime;
+      position2 += speed * deltaTime;
+
+      // Reset position when one full set has passed
+      if (position1 <= -singleSetWidth) {
+        position1 = 0;
+      }
+      if (position2 >= 0) {
+        position2 = -singleSetWidth;
+      }
+
+      // Apply transforms using transform3d for better performance
+      row1.style.transform = `translate3d(${position1}px, 0, 0)`;
+      row2.style.transform = `translate3d(${position2}px, 0, 0)`;
+
+      animationRef.current.id1 = requestAnimationFrame(animate);
     };
 
-    const animateReverse = async () => {
-      if (!container2Ref.current) return;
+    // Start animation
+    animationRef.current.id1 = requestAnimationFrame(animate);
 
-      // Animate second row right to left
-      await controls2.start({
-        x: [-container2Ref.current.scrollWidth / 2, 0],
-        transition: {
-          duration: 50, // Increased duration for slower movement
-          ease: "linear",
-          repeat: Infinity,
-        },
+    // Cleanup function
+    return () => {
+      if (animationRef.current.id1) {
+        cancelAnimationFrame(animationRef.current.id1);
+      }
+    };
+  }, [images, speed]);
+
+  // Preload images for better performance
+  useEffect(() => {
+    const preloadImages = images.map((src) => {
+      const img = new Image();
+      img.src = src;
+      return img;
+    });
+
+    return () => {
+      preloadImages.forEach((img) => {
+        img.src = '';
       });
     };
-
-    animate();
-    animateReverse();
-  }, []);
+  }, [images]);
 
   return (
-    <div className="relative space-y-8 py-4">
-      {/* White gradient overlays */}
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
+    <div className="relative space-y-8 py-4 overflow-hidden">
+      {/* Gradient overlays */}
+      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
       {/* First row - moving left */}
       <div className="overflow-hidden relative w-full">
-        <motion.div 
-          ref={container1Ref}
-          className="flex gap-4"
-          animate={controls1}
+        <div 
+          ref={row1Ref}
+          className="flex gap-4 will-change-transform"
+          style={{ width: `${(300 + 16) * doubledImages.length}px` }}
         >
-          {/* Double the images to create seamless loop */}
-          {[...images, ...images].map((image, index) => (
+          {doubledImages.map((image, index) => (
             <div 
               key={`row1-${index}`}
               className="flex-shrink-0 relative w-[300px] h-[200px] transform -rotate-2 hover:rotate-0 transition-transform duration-300"
             >
               <img
                 src={image}
-                alt={`Room design ${index + 1}`}
+                alt={`Room design ${(index % images.length) + 1}`}
                 className="w-full h-full object-cover rounded-lg shadow-lg"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
 
       {/* Second row - moving right */}
       <div className="overflow-hidden relative w-full">
-        <motion.div 
-          ref={container2Ref}
-          className="flex gap-4"
-          animate={controls2}
+        <div 
+          ref={row2Ref}
+          className="flex gap-4 will-change-transform"
+          style={{ width: `${(300 + 16) * doubledImages.length}px` }}
         >
-          {/* Double the images to create seamless loop */}
-          {[...images, ...images].map((image, index) => (
+          {doubledImages.map((image, index) => (
             <div 
               key={`row2-${index}`}
               className="flex-shrink-0 relative w-[300px] h-[200px] transform rotate-2 hover:rotate-0 transition-transform duration-300"
             >
               <img
                 src={image}
-                alt={`Room design ${index + 1}`}
+                alt={`Room design ${(index % images.length) + 1}`}
                 className="w-full h-full object-cover rounded-lg shadow-lg"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
