@@ -4,10 +4,15 @@ import { setupAuth } from "./auth";
 import { generateOTP } from "./auth";
 import { storage } from "./storage";
 import multer from "multer";
-import { insertRenovationSchema, insertUserSchema, verifyOtpSchema } from "@shared/schema";
+import {
+  insertRenovationSchema,
+  insertUserSchema,
+  verifyOtpSchema,
+} from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import { sendEmail } from "./email";
+import { generateVerificationEmailContent } from "./email";
 import passport from "passport";
 import cors from "cors";
 import express from "express";
@@ -15,16 +20,18 @@ import express from "express";
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
-  }
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Middleware
-  app.use(cors({
-    origin: "http://localhost:5000", // Replace with your frontend origin
-    credentials: true
-  }));
+  app.use(
+    cors({
+      origin: "http://localhost:5173", // Updated to match Vite default client port
+      credentials: true,
+    })
+  );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
@@ -39,13 +46,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: parseResult.error.errors });
       }
 
-      const { firstName, lastName, email, username, password } = parseResult.data;
+      const { firstName, lastName, email, username, password } =
+        parseResult.data;
 
       const existingEmail = await storage.getUserByEmail(email);
-      if (existingEmail) return res.status(400).json({ error: "Email already registered" });
+      if (existingEmail)
+        return res.status(400).json({ error: "Email already registered" });
 
       const existingUsername = await storage.getUserByUsername(username);
-      if (existingUsername) return res.status(400).json({ error: "Username already taken" });
+      if (existingUsername)
+        return res.status(400).json({ error: "Username already taken" });
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const otp = generateOTP();
@@ -60,12 +70,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isVerified: false,
         verificationCode: otp,
         verificationExpiry: expiry,
-        confirmPassword: ""
+        confirmPassword: "",
       });
 
-      await sendEmail(email, "Your OTP Verification Code", `Your OTP is: ${otp}. It expires in 10 minutes.`);
-      res.status(201).json({ message: "Verification code sent to your email" });
+      const { htmlContent, plainTextContent } =
+        generateVerificationEmailContent({
+          firstName,
+          lastName,
+          otp,
+        });
 
+      await sendEmail(
+        email,
+        "Verify Your RenoviqAI Account - Action Required",
+        plainTextContent,
+        htmlContent
+      );
+
+      res.status(201).json({ message: "Verification code sent to your email" });
     } catch (error) {
       console.error("Registration error:", error);
       res.status(500).json({ error: "Failed to register user" });
@@ -74,54 +96,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ──────────────── OTP VERIFY ────────────────
   app.post("/api/verify-otp", async (req, res) => {
-  try {
-    const parseResult = verifyOtpSchema.safeParse(req.body);
-    if (!parseResult.success) {
-      return res.status(400).json({ error: parseResult.error.errors });
-    }
+    try {
+      const parseResult = verifyOtpSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ error: parseResult.error.errors });
+      }
 
-    const { email, otp } = parseResult.data;
-    const user = await storage.getUserByEmail(email);
+      const { email, otp } = parseResult.data;
+      const user = await storage.getUserByEmail(email);
 
-    if (!user) return res.status(400).json({ error: "User not found" });
-    if (user.isVerified) return res.status(400).json({ error: "User already verified" });
-    if (user.verificationCode !== otp) return res.status(400).json({ error: "Invalid OTP" });
-    if (!user.verificationExpiry || user.verificationExpiry < new Date()) {
-      return res.status(400).json({ error: "OTP expired" });
-    }
+      if (!user) return res.status(400).json({ error: "User not found" });
+      if (user.isVerified)
+        return res.status(400).json({ error: "User already verified" });
+      if (user.verificationCode !== otp)
+        return res.status(400).json({ error: "Invalid OTP" });
+      if (!user.verificationExpiry || user.verificationExpiry < new Date()) {
+        return res.status(400).json({ error: "OTP expired" });
+      }
 
-    await storage.verifyUser(user.id.toString());
-    const updatedUser = await storage.getUserByEmail(email);
-    if (!updatedUser) {
-      return res.status(400).json({ error: "Failed to retrieve updated user" });
-    }
+      await storage.verifyUser(user.id.toString());
+      const updatedUser = await storage.getUserByEmail(email);
+      if (!updatedUser) {
+        return res
+          .status(400)
+          .json({ error: "Failed to retrieve updated user" });
+      }
 
-    req.login(updatedUser, (err) => {
-      if (err) return res.status(500).json({ error: "Login failed after verification" });
+      req.login(updatedUser, (err) => {
+        if (err)
+          return res
+            .status(500)
+            .json({ error: "Login failed after verification" });
 
-      return res.status(200).json({
-        success: true,
-        user: updatedUser
+        return res.status(200).json({
+          success: true,
+          user: updatedUser,
+        });
       });
-    });
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      return res.status(500).json({ error: "Failed to verify OTP" });
+    }
+  });
 
-  } catch (error) {
-    console.error("OTP verification error:", error);
-    return res.status(500).json({ error: "Failed to verify OTP" });
-  }
-});
+  // ──────────────── RESEND OTP ────────────────
+  app.post("/api/resend-otp", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(400).json({ error: "User not found" });
+      }
+      if (user.isVerified) {
+        return res.status(400).json({ error: "User already verified" });
+      }
+
+      const otp = generateOTP();
+      const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      // console.log("Updating user verification code in DB for user:", user.id);
+      await storage.updateUserVerificationCode(user.id.toString(), otp, expiry);
+      // console.log("User verification code updated successfully");
+      // console.log("Sending verification email to:", email);
+
+      const { htmlContent, plainTextContent } =
+        generateVerificationEmailContent({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          otp,
+          isResend: true,
+        });
+
+      await sendEmail(
+        email,
+        "Your RenoviqAI Verification Code - Resend Request",
+        plainTextContent,
+        htmlContent
+      );
+
+      res
+        .status(200)
+        .json({ message: "Verification code resent to your email" });
+    } catch (error) {
+      console.error("Resend OTP error:", error);
+      res.status(500).json({ error: "Failed to resend OTP" });
+    }
+  });
 
   // ──────────────── LOGIN ────────────────
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err: any, user: Express.User, info: { message: any; }) => {
-      if (err) return next(err);
-      if (!user) return res.status(401).json({ error: info?.message || "Unauthorized" });
-
-      req.login(user, (err) => {
+    passport.authenticate(
+      "local",
+      (err: any, user: Express.User, info: { message: any }) => {
         if (err) return next(err);
-        return res.status(200).json(user);
-      });
-    })(req, res, next);
+        if (!user)
+          return res
+            .status(401)
+            .json({ error: info?.message || "Unauthorized" });
+
+        req.login(user, (err) => {
+          if (err) return next(err);
+          return res.status(200).json(user);
+        });
+      }
+    )(req, res, next);
   });
 
   // ──────────────── LOGOUT ────────────────
@@ -139,11 +221,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { fullName, email, company, message } = req.body;
 
       if (!fullName || !email || !message) {
-        return res.status(400).json({ error: "Full name, email, and message are required" });
+        return res
+          .status(400)
+          .json({ error: "Full name, email, and message are required" });
       }
 
       // Save to database
-      await storage.createContactFormEntry({ fullName, email, company: company || "", message });
+      await storage.createContactFormEntry({
+        fullName,
+        email,
+        company: company || "",
+        message,
+      });
 
       // Send email notification
       const emailSubject = "New Contact Form Submission";
@@ -157,7 +246,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       `;
 
       // Replace with your email address
-      const recipientEmail = process.env.CONTACT_FORM_RECEIVER_EMAIL || "your-email@example.com";
+      const recipientEmail =
+        process.env.CONTACT_FORM_RECEIVER_EMAIL || "your-email@example.com";
 
       await sendEmail(recipientEmail, emailSubject, emailText);
 
@@ -189,10 +279,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.isAuthenticated()) return res.sendStatus(401);
       if (!req.file || !req.file.mimetype.startsWith("image/")) {
-        return res.status(400).send("Invalid file type. Only images are allowed.");
+        return res
+          .status(400)
+          .send("Invalid file type. Only images are allowed.");
       }
 
-      const base64Image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+      const base64Image = `data:${
+        req.file.mimetype
+      };base64,${req.file.buffer.toString("base64")}`;
 
       const validation = insertRenovationSchema.safeParse({
         userId: req.user.id,
@@ -217,7 +311,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) return res.sendStatus(401);
 
       const renovationId = parseInt(req.params.id, 10);
-      if (isNaN(renovationId)) return res.status(400).send("Invalid renovation ID");
+      if (isNaN(renovationId))
+        return res.status(400).send("Invalid renovation ID");
 
       await storage.deleteRenovation(renovationId);
       res.sendStatus(200);

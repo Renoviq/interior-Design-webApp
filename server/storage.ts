@@ -169,6 +169,18 @@ export class MongoStorage implements IStorage {
       throw error;
     }
   }
+  async updateUserVerificationCode(id: string, code: string, expiry: Date): Promise<void> {
+    try {
+      const users = await this.getUsersCollection();
+      await users.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { verificationCode: code, verificationExpiry: expiry } }
+      );
+    } catch (error) {
+      console.error("Error updating user verification code:", error);
+      throw error;
+    }
+  }
 }
 
 export const storage = new MongoStorage();
