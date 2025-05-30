@@ -103,51 +103,55 @@ export default function LandingPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      {backgroundImages.map((img, index) => (
-        <div
-          key={img}
-          className="fixed inset-0 transition-opacity duration-1000"
-          style={{
-            opacity: currentBg === index ? 1 : 0,
-            backgroundImage: `url(${img})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: -1
-          }}
-        />
-      ))}
+      {/* Optimized Background with proper layering */}
+      <div className="fixed inset-0 z-[-2]">
+        {backgroundImages.map((img, index) => (
+          <div
+            key={img}
+            className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+            style={{
+              opacity: currentBg === index ? 1 : 0,
+              backgroundImage: `url(${img})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          />
+        ))}
+      </div>
 
-      <div className="fixed inset-0 bg-black/50" style={{ zIndex: -1 }} />
+      <div className="fixed inset-0 bg-black/50 z-[-1]" />
 
       <Navbar />
 
       <main className="flex-grow">
-        <section className="min-h-screen flex items-center justify-center">
-          <div className="container mx-auto px-4 text-center">
+        {/* Hero Section - Mobile Optimized */}
+        <section className="min-h-screen flex items-center justify-center pt-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
+              className="space-y-6 sm:space-y-8 max-w-4xl mx-auto"
             >
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-white">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
                 Transform your Space with AI
               </h1>
-              <p className="text-xl text-white/80 max-w-2xl mx-auto">
+              <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed px-4">
                 Transform your living spaces with the power of AI. Upload a photo and get instant renovation ideas that match your style.
               </p>
-              <div className="flex gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
                 <Button
-                  size="sm"
+                  size="lg"
                   onClick={() => window.location.assign("/auth")}
-                  className="group bg-primary hover:bg-primary/90 text-white"
+                  className="w-full sm:w-auto group bg-primary hover:bg-primary/90 text-white px-8 py-3"
                 >
                   Try the AI
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
                 <Button
-                  size="sm"
+                  size="lg"
                   variant="outline"
-                  className="bg-white text-black hover:bg-white/90"
+                  className="w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20"
                   onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Learn More
@@ -157,62 +161,67 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="about" className="py-24 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              {/* Left side - Image */}
+        {/* About Section - Completely Mobile Optimized */}
+        <section id="about" className="py-16 sm:py-20 lg:py-24 bg-white overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+              
+              {/* Mobile-First Image Layout */}
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
-                className="relative"
+                className="relative order-2 lg:order-1"
               >
-                <div className="relative">
-                  {/* Third smallest image - behind main image on upper left */}
-                  <div className="absolute -top-6 -left-6 z-20 w-54 h-40 rounded-lg overflow-hidden shadow-xl border-4 border-white"
-                  style={{ boxShadow: '-8px -8px 25px rgba(0, 0, 0, 0.15)' }}>
+                <div className="relative max-w-sm sm:max-w-md lg:max-w-none mx-auto">
+                  {/* Top Left Accent Image - Responsive sizing */}
+                  <div className="absolute -top-3 -left-3 sm:-top-4 sm:-left-4 lg:-top-6 lg:-left-6 z-20 w-20 h-16 sm:w-32 sm:h-24 lg:w-54 lg:h-40 rounded-lg overflow-hidden shadow-xl border-2 sm:border-4 border-white"
+                    style={{ boxShadow: '-4px -4px 15px rgba(0, 0, 0, 0.1)' }}>
                     <img
                       src="/images/background4.jpg"
                       alt="Bedroom Design"
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                   
-                  {/* Main large image */}
+                  {/* Main large image - Responsive height */}
                   <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
                     <img
                       src="/images/background3.jpg"
                       alt="Modern Living Room"
-                      className="w-full h-[500px] object-cover shadow-2xl"
+                      className="w-full h-64 sm:h-80 lg:h-[500px] object-cover"
+                      loading="lazy"
                     />
                   </div>
                   
-                  {/* Smaller overlapping image - bottom right */}
-                  <div className="absolute -bottom-8 -right-8 z-20 w-64 h-48 rounded-xl overflow-hidden shadow-2xl border-4 border-white">
+                  {/* Bottom Right Accent Image - Responsive sizing */}
+                  <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 lg:-bottom-8 lg:-right-8 z-20 w-28 h-20 sm:w-40 sm:h-32 lg:w-64 lg:h-48 rounded-xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white">
                     <img
                       src="/images/background6.jpg"
                       alt="Living Room Design"
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                 </div>
               </motion.div>
 
-              {/* Right side - Content */}
+              {/* Content - Mobile Optimized */}
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="space-y-8"
+                className="space-y-6 sm:space-y-8 order-2 lg:order-2"
               >
                 <div className="space-y-4">
-                  <p className="text-sm font-semibold text-primary uppercase tracking-wider">
+                  <p className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wider">
                     ABOUT US
                   </p>
-                  <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                     Tech Solutions for Professional Designers
                   </h2>
-                  <p className="text-lg text-gray-600 leading-relaxed">
+                  <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
                     RenoviqAI is an expression of cutting-edge technology and design innovation. 
                     Whether you have traditional tastes or desire a modern feel, we can design your dream spaces to 
                     suit any purpose using the power of artificial intelligence.
@@ -220,7 +229,7 @@ export default function LandingPage() {
                 </div>
 
                 <Button 
-                  className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full text-lg font-medium group"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full text-lg font-medium group"
                   onClick={() => window.location.assign("/about")}
                 >
                   More about Us
@@ -229,33 +238,33 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* Three feature cards */}
+            {/* Three feature cards - Mobile Optimized Grid */}
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid md:grid-cols-3 gap-6 mt-16"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16"
             >
               {[
                 {
-                  icon: <Home className="h-6 w-6" />,
+                  icon: <Home className="h-5 w-5 sm:h-6 sm:w-6" />,
                   title: "Interior Design",
                   description: "Transform your indoor spaces with AI-powered furniture placement and color schemes."
                 },
                 {
-                  icon: <Building className="h-6 w-6" />,
+                  icon: <Building className="h-5 w-5 sm:h-6 sm:w-6" />,
                   title: "Exterior Design",
                   description: "Revolutionize your home's curb appeal with intelligent landscaping and facade improvements."
                 },
                 {
-                  icon: <Paintbrush className="h-6 w-6" />,
+                  icon: <Paintbrush className="h-5 w-5 sm:h-6 sm:w-6" />,
                   title: "Paintify",
                   description: "Instantly visualize different paint colors and flooring options using advanced AI."
                 }
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="group p-6 rounded-xl bg-white border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg"
+                  className="group p-4 sm:p-6 rounded-xl bg-white border border-gray-100 hover:border-primary/20 transition-all duration-300 hover:shadow-lg"
                 >
                   <div className="space-y-3">
                     <div className="inline-flex p-2 rounded-lg bg-gray-50 group-hover:bg-primary/10 transition-colors">
@@ -263,7 +272,7 @@ export default function LandingPage() {
                         {item.icon}
                       </div>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">
                       {item.title}
                     </h3>
                     <p className="text-sm text-gray-600 leading-relaxed">
@@ -276,8 +285,17 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="carousel" className="py-24 bg-white">
+        {/* <section id="carousel" className="py-24 bg-white">
           <div className="container mx-auto px-4">
+            <InfiniteCarousel images={sampleImages} />
+          </div>
+        </section> */}
+        <section id="carousel" className="py-16 sm:py-16 lg:pt-16 lg:pb-24 bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Our Portfolio</h2>
+              <p className="text-lg text-gray-600">Stunning transformations our by AI made</p>
+            </div>
             <InfiniteCarousel images={sampleImages} />
           </div>
         </section>
@@ -385,26 +403,30 @@ export default function LandingPage() {
           </button>
         </section>
 
-        <section id="contact" className="py-24 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 px-[23px]">
-              <div className="max-w-xl">
-                <h2 className="text-4xl font-bold mb-6">Contact us</h2>
-                <p className="text-lg text-muted-foreground mb-8">
+        {/* Contact Section - Mobile Optimized */}
+        <section id="contact" className="py-16 sm:py-20 lg:py-24 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+              
+              {/* Contact Info */}
+              <div className="space-y-6 sm:space-y-8">
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Contact us</h2>
+                <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
                   We are always looking for ways to improve our products and
                   services. Contact us and let us know how we can help you.
                 </p>
                 <div className="space-y-4">
-                  <p className="flex items-center text-muted-foreground">
-                    contact@renoviqai.com
+                  <p className="flex items-center text-gray-600">
+                    📧 contact@renoviqai.com
                   </p>
-                  <p className="flex items-center text-muted-foreground">
-                    +92 344 1886535
+                  <p className="flex items-center text-gray-600">
+                    📞 +92 344 1886535
                   </p>
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-8 shadow-2xl border border-black/20">
+              {/* Contact Form - Mobile Optimized */}
+              <div className="bg-gray-50 rounded-lg p-6 sm:p-8 shadow-xl border border-gray-100">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <FormField
@@ -412,9 +434,9 @@ export default function LandingPage() {
                       name="fullName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full name</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">Full name</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} />
+                            <Input placeholder="John Doe" {...field} className="w-full" />
                           </FormControl>
                         </FormItem>
                       )}
@@ -425,9 +447,9 @@ export default function LandingPage() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email Address</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">Email Address</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="john@example.com" {...field} />
+                            <Input type="email" placeholder="john@example.com" {...field} className="w-full" />
                           </FormControl>
                         </FormItem>
                       )}
@@ -438,9 +460,9 @@ export default function LandingPage() {
                       name="company"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Company</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">Company</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your company name" {...field} />
+                            <Input placeholder="Your company name" {...field} className="w-full" />
                           </FormControl>
                         </FormItem>
                       )}
@@ -451,11 +473,11 @@ export default function LandingPage() {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Message</FormLabel>
+                          <FormLabel className="text-sm font-medium text-gray-700">Message</FormLabel>
                           <FormControl>
                             <Textarea
                               placeholder="How can we help you?"
-                              className="min-h-[100px]"
+                              className="min-h-[100px] w-full"
                               {...field}
                             />
                           </FormControl>
@@ -463,11 +485,16 @@ export default function LandingPage() {
                       )}
                     />
 
-                    <Button type="submit" className="w-48 mx-auto block" disabled={form.formState.isSubmitting}>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-primary hover:bg-primary/90 text-white py-3" 
+                      disabled={form.formState.isSubmitting}
+                    >
                       {form.formState.isSubmitting ? "Sending..." : "Submit"}
                     </Button>
+                    
                     {submitStatus && (
-                      <p className="mt-4 text-center text-sm text-green-600">
+                      <p className="mt-4 text-center text-sm text-green-600 bg-green-50 p-3 rounded-lg">
                         {submitStatus}
                       </p>
                     )}

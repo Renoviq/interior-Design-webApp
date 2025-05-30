@@ -44,7 +44,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-2 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-md">
+    <nav className="fixed top-4 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-md lg:right-24 lg:left-24">
       <div className="mx-auto px-4">
         <div className="flex h-12 items-center justify-between">
           {/* Logo - Left */}
