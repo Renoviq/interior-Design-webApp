@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "./ui/mode-toggle";
 import { useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +11,7 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMenuOpen(false);
   };
 
@@ -46,7 +47,6 @@ export function Navbar() {
     <nav className="fixed top-2 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-md">
       <div className="mx-auto px-4">
         <div className="flex h-12 items-center justify-between">
-          
           {/* Logo - Left */}
           <div className="flex-shrink-0">
             <a href="/" className="text-lg font-bold flex items-center">
@@ -77,8 +77,8 @@ export function Navbar() {
             >
               Join
             </Button>
-            <button 
-              onClick={() => handleNav("/auth")} 
+            <button
+              onClick={() => handleNav("/auth")}
               className="text-sm font-medium text-gray-800 dark:text-white hover:text-primary transition"
             >
               Sign In
@@ -87,7 +87,10 @@ export function Navbar() {
 
           {/* Mobile Toggle */}
           <div className="md:hidden">
-            <button onClick={() => setMenuOpen(!menuOpen)} className="text-gray-800 dark:text-white">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="text-gray-800 dark:text-white"
+            >
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>

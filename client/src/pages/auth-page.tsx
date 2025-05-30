@@ -135,11 +135,8 @@ export default function AuthPage() {
   };
 
   const handleGoogleAuth = () => {
-    // Implement Google OAuth logic here
-    toast({
-      title: "Coming Soon",
-      description: "Google authentication will be available soon.",
-    });
+    // Redirect to backend Google OAuth route
+    window.location.href = "/auth/google";
   };
 
   // Logo Component

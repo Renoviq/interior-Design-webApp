@@ -38,6 +38,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up Passport and session
   setupAuth(app);
 
+  // ──────────────── GOOGLE OAUTH ────────────────
+  app.get(
+    "/auth/google",
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      prompt: "select_account",
+    })
+  );
+
+  app.get(
+    "/auth/google/callback",
+    passport.authenticate("google", {
+      failureRedirect: "/login",
+      session: true,
+    }),
+    (req, res) => {
+      // Successful authentication, redirect to client app or desired page
+      res.redirect("http://localhost:5173/studio");
+    }
+  );
+
   // ──────────────── REGISTER ────────────────
   app.post("/api/register", async (req, res) => {
     try {

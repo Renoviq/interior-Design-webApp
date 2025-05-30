@@ -10,12 +10,15 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUserSchema & { 
     isVerified: boolean;
     verificationCode: string | null;
     verificationExpiry: Date | null;
+    googleId?: string;
   }): Promise<User>;
   verifyUser(id: string): Promise<void>;
+  updateUserGoogleId(id: string, googleId: string): Promise<void>;
   getRenovationsByUserId(userId: number): Promise<Renovation[]>;
   createRenovation(renovation: InsertRenovation): Promise<Renovation>;
   deleteRenovation(id: number): Promise<void>;
@@ -60,6 +63,7 @@ export class MongoStorage implements IStorage {
       isVerified: doc.isVerified,
       verificationCode: doc.verificationCode,
       verificationExpiry: doc.verificationExpiry ? new Date(doc.verificationExpiry) : null,
+      googleId: doc.googleId || null,
     };
   }
 
@@ -88,16 +92,37 @@ export class MongoStorage implements IStorage {
     return this.mapUser(doc);
   }
 
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    const users = await this.getUsersCollection();
+    const doc = await users.findOne({ googleId });
+    if (!doc) return undefined;
+    return this.mapUser(doc);
+  }
+
   async createUser(user: InsertUserSchema & {
     isVerified: boolean;
     verificationCode: string | null;
     verificationExpiry: Date | null;
+    googleId?: string;
   }): Promise<User> {
     const users = await this.getUsersCollection();
     const result = await users.insertOne(user);
     const insertedUser = await users.findOne({ _id: result.insertedId });
     if (!insertedUser) throw new Error("Failed to create user");
     return this.mapUser(insertedUser);
+  }
+
+  async updateUserGoogleId(id: string, googleId: string): Promise<void> {
+    try {
+      const users = await this.getUsersCollection();
+      await users.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { googleId } }
+      );
+    } catch (error) {
+      console.error("Error updating user googleId:", error);
+      throw error;
+    }
   }
 
   async verifyUser(id: string): Promise<void> {

@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   isVerified: boolean("is_verified").default(false),
   verificationCode: text("verification_code"),
   verificationExpiry: timestamp("verification_expiry"),
+  googleId: text("google_id"),
 });
 
 export const renovations = pgTable("renovations", {
@@ -36,6 +37,7 @@ export const baseUserSchema = createInsertSchema(users)
 export const insertUserSchema = baseUserSchema
   .extend({
     confirmPassword: z.string(),
+    googleId: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
