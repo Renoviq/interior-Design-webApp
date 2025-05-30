@@ -44,7 +44,8 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-4 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-md lg:right-24 lg:left-24">
+    <nav className="fixed top-4 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/70 dark:bg-black/50 backdrop-blur-lg shadow-lg shadow-[rgba(0,0,0,0.25)]
+ lg:right-24 lg:left-24">
       <div className="mx-auto px-4">
         <div className="flex h-12 items-center justify-between">
           {/* Logo - Left */}
@@ -72,7 +73,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-3 flex-shrink-0">
             <Button
               variant="outline"
-              className="bg-white text-black hover:bg-primary hover:text-white border border-gray-300 dark:border-white/30 transition rounded-full px-4 py-1 text-sm"
+              className="bg-black/80 text-white hover:bg-primary hover:text-white border border-gray-300 dark:border-white/30 transition rounded-full px-6 py-1 text-sm"
               onClick={handleNav.bind(null, "/auth")}
             >
               Join
