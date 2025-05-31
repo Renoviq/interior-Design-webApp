@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./ui/mode-toggle";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
 import { useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -44,8 +54,10 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-4 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/70 dark:bg-black/50 backdrop-blur-lg shadow-lg shadow-[rgba(0,0,0,0.25)]
- lg:right-24 lg:left-24">
+    <nav
+      className="fixed top-4 left-2 right-2 z-50 rounded-xl border border-gray-200 bg-white/70 dark:bg-black/50 backdrop-blur-lg shadow-lg shadow-[rgba(0,0,0,0.25)]
+ lg:right-24 lg:left-24"
+    >
       <div className="mx-auto px-4">
         <div className="flex h-12 items-center justify-between">
           {/* Logo - Left */}
@@ -57,16 +69,71 @@ export function Navbar() {
           </div>
 
           {/* Desktop Nav - Center */}
+          {/* Main navbar buttons */}
           <div className="hidden md:flex items-center justify-center space-x-8 flex-1">
-            {menuItems.slice(0, 4).map((item) => (
-              <button
-                key={item.label}
-                onClick={item.action}
-                className="text-sm font-medium text-gray-800 dark:text-white hover:text-primary transition"
-              >
-                {item.label}
-              </button>
-            ))}
+            {/* Other buttons */}
+            {menuItems
+              .filter(
+                (item) => !["Features", "Join", "Sign In"].includes(item.label)
+              )
+              .map((item) => (
+                <button
+                  key={item.label}
+                  onClick={item.action}
+                  className="text-sm font-medium text-gray-800 dark:text-white hover:text-primary transition"
+                >
+                  {item.label}
+                </button>
+              ))}
+
+            {/* Features dropdown - wrapped to prevent spacing issues */}
+            <div className="text-sm font-medium text-gray-800 dark:text-white hover:text-primary transition">
+              <NavigationMenu className="relative z-10">
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className="!bg-transparent !hover:bg-transparent p-0 hover:text-primary !focus:bg-transparent dark:dark:text-white transition">
+                      Features
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent className="bg-white dark:bg-black p-4 rounded-md shadow-md">
+                      <ul className="grid gap-2 w-48">
+                      <li>
+                        <NavigationMenuLink
+                          className="block px-2 py-1 text-sm text-gray-700 dark:text-white hover:text-primary cursor-pointer"
+                          onClick={() => handleNav("/features")}
+                        >
+                          Redesigning Interior
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink
+                          className="block px-2 py-1 text-sm text-gray-700 dark:text-white hover:text-primary cursor-pointer"
+                          onClick={() => handleNav("/features")}
+                        >
+                          Virtual Stagging
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink
+                          className="block px-2 py-1 text-sm text-gray-700 dark:text-white hover:text-primary cursor-pointer"
+                          onClick={() => handleNav("/features")}
+                        >
+                          Exterior Design and Landscaping
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink
+                          className="block px-2 py-1 text-sm text-gray-700 dark:text-white hover:text-primary cursor-pointer"
+                          onClick={() => handleNav("/features")}
+                        >
+                          Paintify (Change Wall Colors and Flooring)
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
           </div>
 
           {/* Auth Buttons - Right */}
