@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "./ui/mode-toggle";
 import {
   NavigationMenu,
   NavigationMenuContent,

@@ -1,9 +1,9 @@
 import { useAuth } from "@/hooks/use-auth";
-import { UserNav } from "@/components/user-nav";
 import { ImageUpload } from "@/components/image-upload";
 import { InfiniteGallery } from "@/components/infinite-gallery";
 import { useQuery } from "@tanstack/react-query";
 import type { Renovation } from "@shared/schema";
+import Header from "./_homepageComponents/Header";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -11,26 +11,24 @@ export default function HomePage() {
     queryKey: ["/api/renovations"],
   });
 
+  const handleDesigningStyles = () => {
+    window.location.href='/create-newDesign';
+  };
+
+  const handleViewGallery = () => {
+    const renovationSection = document.getElementById('renovation-content');
+    if (renovationSection) {
+      renovationSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Header */}
-      <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-white-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">R</span>
-            </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-              Renoviq AI
-            </h1>
-            <span className="hidden sm:inline text-sm text-slate-500 border-l border-slate-300 pl-3 ml-3">
-              Your Personal AI Home Renovator
-            </span>
-          </div>
-          <UserNav />
-        </div>
-      </header>
-
+      <Header />
       <main className="container mx-auto px-4 py-8 lg:py-12">
         {/* Hero Section */}
         <section className="text-center space-y-6 mb-16">
@@ -54,10 +52,10 @@ export default function HomePage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <button className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-400 text-white rounded-xl font-semibold hover:from-green-400 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            <button onClick={handleDesigningStyles} className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-400 text-white rounded-xl font-semibold hover:from-green-400 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
               Designing Styles
             </button>
-            <button className="px-8 py-4 bg-white text-slate-700 rounded-xl font-semibold border border-slate-200 hover:bg-slate-50 transition-all duration-200 shadow-sm hover:shadow-md">
+            <button onClick={handleViewGallery} className="px-8 py-4 bg-white text-slate-700 rounded-xl font-semibold border border-slate-200 hover:bg-slate-50 transition-all duration-200 shadow-sm hover:shadow-md">
               View Gallery
             </button>
           </div>
@@ -81,7 +79,7 @@ export default function HomePage() {
         </section>
 
         {/* Renovations Content */}
-        <section className="space-y-6">
+        <section id="renovation-content" className="space-y-6">
           {/* Section Title */}
           <div className="text-center space-y-2">
             <h2 className="text-3xl font-bold text-slate-800">

@@ -10,6 +10,7 @@ import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 import AboutPage from "@/pages/About";
 import contact from "@/pages/contact";
+import CreateNewDesignPage from "@/pages/CreateNewDesignPage";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/about" component={AboutPage} />
       <Route path="/contact" component={contact} />
       <ProtectedRoute path="/studio" component={HomePage} />
+      <ProtectedRoute path="/create-newDesign" component={CreateNewDesignPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
