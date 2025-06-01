@@ -65,7 +65,7 @@ export default function Contact() {
 
       {/* Hero Section */}
       <div
-        className="relative bg-cover bg-center h-96 flex flex-col pt-24 justify-center items-center text-center text-white"
+        className="relative bg-cover bg-center h-[35rem] flex flex-col pt-24 justify-center items-center text-center text-white"
         style={{ backgroundImage: "url('/images/background3.jpg')" }}
       >
         <h1 className="text-6xl font-bold z-10">Contact</h1>

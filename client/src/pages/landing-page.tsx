@@ -368,7 +368,7 @@ export default function LandingPage() {
           </div>
 
           {/* Right Side - Room Image */}
-          <div className="hidden lg:block w-2/5 relative">
+          <div className="hidden lg:block w-[47%] relative">
             <div 
               className="absolute inset-0 bg-cover bg-center bg-no-repeat"
               style={{
