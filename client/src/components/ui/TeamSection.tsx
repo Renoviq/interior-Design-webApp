@@ -48,9 +48,9 @@ export default function TeamSection() {
                 role: "AI/Back-end Development",
                 img: "/images/team1.jpg",
                 socials: {
-                  facebook: "#",
-                  instagram: "#",
-                  linkedin: "#",
+                  facebook: "https://www.facebook.com/share/1BxYkMBx3H/",
+                  instagram: "https://www.instagram.com/__hamzashah?igsh=MWkxa2lpZHNoeGJ4cg==",
+                  linkedin: "https://www.linkedin.com/in/hamzashah658",
               }},
               {
                 name: "Muhammad Talha",
