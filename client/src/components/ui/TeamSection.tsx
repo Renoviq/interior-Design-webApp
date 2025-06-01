@@ -47,26 +47,50 @@ export default function TeamSection() {
                 name: "Hamza Shah",
                 role: "AI/Back-end Development",
                 img: "/images/team1.jpg",
-              },
+                socials: {
+                  facebook: "#",
+                  instagram: "#",
+                  linkedin: "#",
+              }},
               {
                 name: "Muhammad Talha",
                 role: "Front-end and Design Management",
                 img: "/images/team2.jpg",
+                socials: {
+                  facebook: "https://www.facebook.com/share/1C8QXv2g16/",
+                  instagram: "https://www.instagram.com/malik_talha_000?igsh=eTB0Znk0eGNhMGFh",
+                  linkedin: "https://www.linkedin.com/in/muhammad-talha-393289294?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+              }
               },
               {
                 name: "Raja Hammad Ali",
                 role: "Front-end Development",
                 img: "/images/team3.jpg",
+                socials: {
+                  facebook: "https://www.facebook.com/share/1DsnhvSNfQ/",
+                  instagram: "https://www.instagram.com/rajahammadali313?igsh=YTQxOXRnYjFpMmhn&utm_source=qr",
+                  linkedin: "https://www.linkedin.com/in/raja-hammad-ali-15763a336?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+              }
               },
               {
                 name: "Syed Kumail Raza",
                 role: "Back-end APIs and Routes",
                 img: "/images/team4.jpg",
+                socials: {
+                  facebook: "https://www.facebook.com/profile.php?id=100089912301657",
+                  instagram: "https://www.instagram.com/hehe_.kumail?igsh=bTFtOTR1ZzV1MDQx",
+                  linkedin: "https://www.linkedin.com/in/syed-muhammad-kumail-raza-kazmi-ab705528b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+              }
               },
               {
                 name: "Wahab Ul Hassan",
                 role: "Database Management",
                 img: "/images/team5.jpg",
+                socials: {
+                  facebook: "https://www.facebook.com/share/1EYhSfnqtX/",
+                  instagram: "https://x.com/AbdulWahab6666?t=Q2HuD2FTcTKw7LPLYQRzwg&s=08",
+                  linkedin: "https://www.linkedin.com/in/wahab-ul-hassan-subhani-44022b2bb?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+              }
               },
             ].map((member, index) => (
               <SwiperSlide key={index}>
@@ -78,15 +102,38 @@ export default function TeamSection() {
                       className="w-full h-64 object-cover"
                     />
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {[X, Facebook, Instagram, Linkedin].map((Icon, i) => (
-                        <a
-                          key={i}
-                          href="#"
-                          className="p-2 bg-white rounded-md hover:bg-primary transition"
-                        >
-                          <Icon size={20} className="text-gray-800" />
-                        </a>
-                      ))}
+                      <div className="flex gap-3">
+                        {member.socials.facebook && (
+                          <a
+                            href={member.socials.facebook}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 bg-white rounded-md hover:bg-primary transition"
+                          >
+                            <Facebook size={20} className="text-gray-800" />
+                          </a>
+                        )}
+                        {member.socials.instagram && (
+                          <a
+                            href={member.socials.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 bg-white rounded-md hover:bg-primary transition"
+                          >
+                            <Instagram size={20} className="text-gray-800" />
+                          </a>
+                        )}
+                        {member.socials.linkedin && (
+                          <a
+                            href={member.socials.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 bg-white rounded-md hover:bg-primary transition"
+                          >
+                            <Linkedin size={20} className="text-gray-800" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="p-4 text-left">
