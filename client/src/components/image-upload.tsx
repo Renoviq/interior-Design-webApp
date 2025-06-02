@@ -1,100 +1,84 @@
-import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
-import { Loader2, Upload } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, ChangeEvent } from 'react';
 
-export function ImageUpload() {
-  const [roomType, setRoomType] = useState<string>("");
-  const { toast } = useToast();
+interface ImageUploadProps {
+  onFileSelect: (file: File | null) => void;
+}
 
-  const uploadMutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-      const res = await fetch("/api/renovations", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Upload failed");
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/renovations"] });
-      toast({
-        title: "Success",
-        description: "Your room has been processed successfully",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+export const ImageUpload: React.FC<ImageUploadProps> = ({ onFileSelect }) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (!roomType) {
-      toast({
-        title: "Error",
-        description: "Please select a room type",
-        variant: "destructive",
-      });
-      return;
+  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setError(null);
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file.');
+        onFileSelect(null);
+        setPreviewUrl(null);
+        return;
+      }
+      onFileSelect(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      onFileSelect(null);
+      setPreviewUrl(null);
     }
-
-    const formData = new FormData();
-    formData.append("image", acceptedFiles[0]);
-    formData.append("roomType", roomType);
-    uploadMutation.mutate(formData);
-  }, [roomType]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "image/*": [".jpeg", ".jpg", ".png"],
-    },
-    maxSize: 5 * 1024 * 1024,
-    multiple: false,
-  });
+  };
 
   return (
-    <Card>
-      <CardContent className="p-6 space-y-4">
-        <Select value={roomType} onValueChange={setRoomType}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select room type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="bedroom">Bedroom</SelectItem>
-            <SelectItem value="living">Living Room</SelectItem>
-            <SelectItem value="kitchen">Kitchen</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-            ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25"}`}
-        >
-          <input {...getInputProps()} />
-          {uploadMutation.isPending ? (
-            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-          ) : (
-            <>
-              <Upload className="h-8 w-8 mx-auto mb-4" />
-              <p className="text-sm text-muted-foreground">
-                Drag & drop an image here, or click to select
-              </p>
-            </>
-          )}
+    <div className="w-full flex flex-col items-center">
+      {previewUrl ? (
+        <div className="relative w-full h-64 border border-gray-300 rounded-md overflow-hidden bg-gray-50">
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="object-contain w-full h-full"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              onFileSelect(null);
+              setPreviewUrl(null);
+              setError(null);
+            }}
+            className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700 transition"
+            aria-label="Remove selected image"
+          >
+            &times;
+          </button>
         </div>
-      </CardContent>
-    </Card>
+      ) : (
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 hover:border-green-600 hover:bg-green-50 transition text-gray-500"
+        >
+          <svg
+            className="w-12 h-12 mb-3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M7 16V4m0 0L3 8m4-4l4 4m6 4v8m0 0l4-4m-4 4l-4-4"
+            />
+          </svg>
+          <span>Click to select an image or drag and drop</span>
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            onChange={onFileChange}
+            className="hidden"
+          />
+        </label>
+      )}
+      {error && <p className="text-red-600 mt-2">{error}</p>}
+    </div>
   );
-}
+};

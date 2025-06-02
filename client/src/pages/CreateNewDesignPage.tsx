@@ -1,87 +1,102 @@
-import React from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { Link, useLocation } from 'wouter';
-import { Button } from 'react-day-picker';
+import React, { useState } from 'react';
+import Header from './_homepageComponents/Header';
+import { ImageUpload } from '@/components/image-upload';
+import { RoomType } from '@/components/RoomType';
+import { DesignType } from '@/components/DesignType';
+import { AdditionalReq } from '@/components/AdditionalReq';
+import { storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const CreateNewDesignPage: React.FC = () => {
-  const [, setLocation] = useLocation();
+function CreateNewDesignPage() {
+  const [selectedRoom, setSelectedRoom] = useState('Kitchen');
+  const [selectedDesign, setSelectedDesign] = useState('modern');
+  const [additionalReq, setAdditionalReq] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleGenerate = async () => {
+    if (!selectedFile) {
+      alert('Please select an image before generating.');
+      return;
+    }
+    setUploading(true);
+    try {
+      // Upload image to Firebase Storage
+      const storageRef = ref(storage, `uploads/${Date.now()}_${selectedFile.name}`);
+      await uploadBytes(storageRef, selectedFile);
+      const imageUrl = await getDownloadURL(storageRef);
+
+      // Send data to backend API
+      const response = await fetch('/api/renovations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          originalImage: imageUrl,
+          generatedImage: '', // Will be updated after AI generation
+          roomType: selectedRoom,
+          description: additionalReq,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to save renovation');
+      }
+
+      alert('Image uploaded and renovation saved successfully!');
+      setSelectedFile(null);
+      setAdditionalReq('');
+    } catch (error: any) {
+      alert(error.message || 'An error occurred');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header with back button */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+    <div>
+      <Header />
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-center mb-6 text-green-600">
+          Experience the Magic of AI Remodeling
+        </h1>
+        <p className="text-center mb-12 text-gray-700">
+          Transform any room with a click. Select a space, choose a style, and watch as AI instantly reimagines your environment.
+        </p>
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left: Image Upload */}
+          <div className="md:w-1/2">
+            <label className="block mb-2 font-semibold text-gray-700">
+              Select Image of your room
+            </label>
+            <div className="border border-gray-300 rounded-md p-4 min-h-[300px] flex items-center justify-center bg-gray-50">
+              <ImageUpload onFileSelect={setSelectedFile} />
+            </div>
+          </div>
+
+          {/* Right: Form Controls */}
+          <div className="md:w-1/2 space-y-6">
+            <RoomType selectedRoom={selectedRoom} onChange={setSelectedRoom} />
+            <DesignType selectedDesign={selectedDesign} onSelect={setSelectedDesign} />
+            <AdditionalReq value={additionalReq} onChange={setAdditionalReq} />
             <button
-              onClick={() => setLocation('/studio')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              onClick={handleGenerate}
+              disabled={uploading}
+              className="w-full bg-green-600 text-white py-3 rounded-md font-semibold hover:bg-purple-800 transition disabled:opacity-50"
             >
-              <ArrowLeft className="h-5 w-5" />
-              Back to Home
+              {uploading ? 'Generating...' : 'Generate'}
             </button>
-            <h1 className="text-2xl font-bold text-gray-900">Create New Design</h1>
+            <p className="text-center text-sm text-gray-500">
+              NOTE: 1 Credit will use to redesign your room
+            </p>
           </div>
         </div>
-      </div>
-
-      {/* Main content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">
-              Design Your Space
-            </h2>
-            
-            {/* Placeholder content - replace with your actual design interface */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                <h3 className="font-semibold text-gray-900 mb-2">Living Room</h3>
-                <p className="text-gray-600 text-sm">Design your living space</p>
-              </div>
-              
-              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                <h3 className="font-semibold text-gray-900 mb-2">Kitchen</h3>
-                <p className="text-gray-600 text-sm">Create your dream kitchen</p>
-              </div>
-              
-              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                <h3 className="font-semibold text-gray-900 mb-2">Bedroom</h3>
-                <p className="text-gray-600 text-sm">Design your bedroom</p>
-              </div>
-              
-              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                <h3 className="font-semibold text-gray-900 mb-2">Bathroom</h3>
-                <p className="text-gray-600 text-sm">Renovate your bathroom</p>
-              </div>
-              
-              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                <h3 className="font-semibold text-gray-900 mb-2">Office</h3>
-                <p className="text-gray-600 text-sm">Design your workspace</p>
-              </div>
-              
-              <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer">
-                <h3 className="font-semibold text-gray-900 mb-2">Outdoor</h3>
-                <p className="text-gray-600 text-sm">Design outdoor spaces</p>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="mt-8 flex gap-4">
-              <button className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                Start New Project
-              </button>
-              <Link 
-                to="/studio" 
-                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors inline-block text-center no-underline"
-              >
-                Go to Studio
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
   );
-};
+}
 
 export default CreateNewDesignPage;

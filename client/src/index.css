@@ -1,3 +1,7 @@
+/*
+  The following directives require Tailwind CSS to process this file.
+  Make sure your build tool (like PostCSS with Tailwind) is set up correctly.
+*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

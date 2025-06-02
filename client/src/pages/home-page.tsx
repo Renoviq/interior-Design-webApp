@@ -1,8 +1,8 @@
 import { useAuth } from "@/hooks/use-auth";
-import { ImageUpload } from "@/components/image-upload";
 import { InfiniteGallery } from "@/components/infinite-gallery";
 import { useQuery } from "@tanstack/react-query";
 import type { Renovation } from "@shared/schema";
+import { useLocation } from "wouter";
 import Header from "./_homepageComponents/Header";
 
 export default function HomePage() {
@@ -11,9 +11,7 @@ export default function HomePage() {
     queryKey: ["/api/renovations"],
   });
 
-  const handleDesigningStyles = () => {
-    window.location.href='/create-newDesign';
-  };
+  const [location, setLocation] = useLocation();
 
   const handleViewGallery = () => {
     const renovationSection = document.getElementById('renovation-content');
@@ -52,32 +50,14 @@ export default function HomePage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <button onClick={handleDesigningStyles} className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-400 text-white rounded-xl font-semibold hover:from-green-400 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Designing Styles
+            <button onClick={() => setLocation("/create-newDesign")} className="px-8 py-4 bg-gradient-to-r from-green-600 to-green-400 text-white rounded-xl font-semibold hover:from-green-400 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              Create New Design
             </button>
             <button onClick={handleViewGallery} className="px-8 py-4 bg-white text-slate-700 rounded-xl font-semibold border border-slate-200 hover:bg-slate-50 transition-all duration-200 shadow-sm hover:shadow-md">
               View Gallery
             </button>
           </div>
         </section>
-
-        {/* Upload Section */}
-        <section className="max-w-4xl mx-auto mb-16">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden">
-            <div className="bg-gradient-to-r from-slate-50 to-blue-50 px-8 py-6 border-b border-slate-200/60">
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                Upload Your Room
-              </h2>
-              <p className="text-slate-600">
-                Get instant AI-powered renovation suggestions
-              </p>
-            </div>
-            <div className="p-8">
-              <ImageUpload />
-            </div>
-          </div>
-        </section>
-
         {/* Renovations Content */}
         <section id="renovation-content" className="space-y-6">
           {/* Section Title */}
